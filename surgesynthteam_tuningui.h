@@ -181,13 +181,19 @@ public:
         {
             rmbMenu->clear();
             rmbMenu->addItem(1, "Export to CSV" );
-            auto result = rmbMenu->show();
+            std::function<void(int)> callback = [&](int result) {
             if( result == 1 )
                 exportToCSV();
+            };
+            juce::PopupMenu::Options options{};
+            rmbMenu->showMenuAsync(options, callback);
         }
     }
 
     virtual void exportToCSV() {
+        #if JUCE_ANDROID
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::AlertIconType::WarningIcon, "NOT SUPPORTED", "This feature is not supported on Android...");
+        #else
         juce::FileChooser fc( "Export CSV to...", juce::File(), "*.csv" );
         if( fc.browseForFileToSave(true) )
         {
@@ -207,6 +213,7 @@ public:
 
             }
         }
+        #endif
     }
        
 
